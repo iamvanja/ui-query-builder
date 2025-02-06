@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 
 const AutoComplete = forwardRef<
   HTMLInputElement,
@@ -12,6 +12,19 @@ const AutoComplete = forwardRef<
   const [suggestions, setSuggestions] = useState<string[]>(fields);
   const [inputValue, setInputValue] = useState("");
   const [focusedSuggestionIndex, setFocusedSuggestionIndex] = useState(-1);
+  const suggestionRefs = useRef<(HTMLLIElement | null)[]>([]);
+
+  useEffect(() => {
+    // Fixes keyboard dropdown selection not scrolling into view
+    if (
+      focusedSuggestionIndex >= 0 &&
+      focusedSuggestionIndex < suggestionRefs.current.length
+    ) {
+      suggestionRefs.current[focusedSuggestionIndex]?.scrollIntoView({
+        block: "nearest",
+      });
+    }
+  }, [focusedSuggestionIndex]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // todo: debounce this
@@ -38,9 +51,9 @@ const AutoComplete = forwardRef<
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // allow parent component to still implement its onKeyDown event
     props.onKeyDown?.(e);
 
-    // todo: handle keyboard navigation going outside the viewport
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setFocusedSuggestionIndex((prev) =>
@@ -79,6 +92,9 @@ const AutoComplete = forwardRef<
           {suggestions.map((suggestion, index) => (
             <li
               key={`autocomplete-list-item-${index}`}
+              ref={(el) => {
+                suggestionRefs.current[index] = el;
+              }}
               className={`px-4 py-2 cursor-pointer ${
                 index === focusedSuggestionIndex
                   ? "bg-accent text-accent-foreground"
