@@ -1,3 +1,5 @@
+import { Input } from "@/components/ui/input";
+
 export default function Page() {
   return (
     <>
@@ -18,7 +20,10 @@ export default function Page() {
         </header>
         <nav>
           <div className="mx-auto max-w-7xl px-8 py-4">
-            Query Builder UI here
+            <Input
+              type="text"
+              placeholder="Future Autocomplete component here..."
+            />
           </div>
         </nav>
         <main>
