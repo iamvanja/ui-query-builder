@@ -70,7 +70,9 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
     };
 
     const handleSelectionChange = (suggestion: string) => {
-      onSelectionChange && onSelectionChange(suggestion);
+      if (onSelectionChange) {
+        onSelectionChange(suggestion);
+      }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
