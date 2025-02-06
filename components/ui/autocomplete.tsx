@@ -14,15 +14,30 @@ interface AutoCompleteProps
   > {
   fields: string[];
   onSelectionChange?: (selectedItem: string) => void;
+  allowNoMatchSelection?: boolean;
 }
 
 const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
-  ({ value, fields, onSelectionChange, ...props }, ref) => {
+  (
+    {
+      value,
+      fields,
+      onSelectionChange,
+      allowNoMatchSelection = false,
+      ...props
+    },
+    ref
+  ) => {
     const [isInputFocused, setInputFocused] = useState(false);
     const [suggestions, setSuggestions] = useState<string[]>(fields);
-    const [inputValue, setInputValue] = useState("");
     const [focusedSuggestionIndex, setFocusedSuggestionIndex] = useState(-1);
     const suggestionRefs = useRef<(HTMLLIElement | null)[]>([]);
+
+    useEffect(() => {
+      // Reset suggestions and focusedIndex when fields prop updates
+      setSuggestions(fields);
+      setFocusedSuggestionIndex(-1);
+    }, [fields]);
 
     useEffect(() => {
       // Fixes keyboard dropdown selection not scrolling into view
@@ -45,7 +60,6 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
     };
 
     const updateSuggestions = (value: string) => {
-      setInputValue(value);
       let filteredSuggestions: string[] = [];
 
       filteredSuggestions = fields.filter((col) =>
@@ -56,7 +70,6 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
     };
 
     const handleSelectionChange = (suggestion: string) => {
-      setInputValue(suggestion);
       onSelectionChange && onSelectionChange(suggestion);
     };
 
@@ -76,6 +89,10 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
         e.preventDefault();
         let finalValue = suggestions[focusedSuggestionIndex];
 
+        if (focusedSuggestionIndex === -1 && allowNoMatchSelection) {
+          finalValue = value as string;
+        }
+
         if (finalValue) {
           handleSelectionChange(finalValue);
         }
@@ -86,7 +103,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
       <div className="w-full relative">
         <Input
           {...props}
-          value={inputValue}
+          value={value}
           ref={ref}
           type="text"
           className="w-full"
