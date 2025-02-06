@@ -8,6 +8,24 @@ const AutoComplete = forwardRef<
   }
 >(({ value, fields, ...props }, ref) => {
   const [isInputFocused, setInputFocused] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>(fields);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    updateSuggestions(e.target.value);
+
+    // allow parent component to still implement its onChange event
+    props.onChange?.(e);
+  };
+
+  const updateSuggestions = (value: string) => {
+    let filteredSuggestions: string[] = [];
+
+    filteredSuggestions = fields.filter((col) =>
+      col.toLowerCase().includes(value.toLowerCase())
+    );
+
+    setSuggestions(filteredSuggestions);
+  };
 
   return (
     <div className="w-full relative">
@@ -18,16 +36,17 @@ const AutoComplete = forwardRef<
         className="w-full"
         onFocus={() => setInputFocused(true)}
         onBlur={() => setInputFocused(false)}
+        onChange={handleChange}
       />
 
-      {isInputFocused && fields.length > 0 && (
+      {isInputFocused && suggestions.length > 0 && (
         <ul className="absolute left-0 right-0 z-10 bg-popover text-popover-foreground border rounded-md shadow-lg max-h-60 overflow-auto">
-          {fields.map((field, index) => (
+          {suggestions.map((suggestion, index) => (
             <li
               key={`autocomplete-list-item-${index}`}
               className="px-4 py-2 cursor-pointer"
             >
-              {field}
+              {suggestion}
             </li>
           ))}
         </ul>
