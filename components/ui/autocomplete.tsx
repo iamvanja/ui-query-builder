@@ -112,4 +112,6 @@ const AutoComplete = forwardRef<
   );
 });
 
+AutoComplete.displayName = "AutoComplete";
+
 export { AutoComplete };
