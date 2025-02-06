@@ -1,9 +1,10 @@
 import { AutoComplete } from "@/components/ui/autocomplete";
 import { useState } from "react";
 import columns from "@/columns.json";
+import { QueryBuilder } from "@/components/query-builder";
 
 export default function Page() {
-  const [autoCompleteSelection, setAutoCompleteSelection] = useState("");
+  const [queryBuilderResult, setQueryBuilderResult] = useState("");
 
   return (
     <div className="min-h-full bg-gray-100">
@@ -23,12 +24,11 @@ export default function Page() {
       </header>
       <nav>
         <div className="mx-auto max-w-7xl px-8 py-4">
-          autocomplete selection: {autoCompleteSelection}
+          QueryBuilder result: {queryBuilderResult}
           <br />
-          <AutoComplete
-            fields={columns}
-            placeholder="Future Autocomplete component here..."
-            onSelectionChange={setAutoCompleteSelection}
+          <QueryBuilder
+            columns={columns}
+            onQueryUpdate={setQueryBuilderResult}
           />
         </div>
       </nav>
