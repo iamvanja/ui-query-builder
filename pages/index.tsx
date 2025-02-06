@@ -1,4 +1,5 @@
 import { AutoComplete } from "@/components/ui/autocomplete";
+import { useState } from "react";
 
 const columns = [
   "Name",
@@ -26,7 +27,6 @@ const columns = [
   "Wedding Date",
   "(line break)",
   "AssignedTo",
-  "Name",
   "Notes",
   "Email Addresses",
   "Last Email From",
@@ -59,6 +59,8 @@ const columns = [
 ];
 
 export default function Page() {
+  const [autoCompleteSelection, setAutoCompleteSelection] = useState("");
+
   return (
     <>
       <div className="min-h-full bg-gray-100">
@@ -78,9 +80,12 @@ export default function Page() {
         </header>
         <nav>
           <div className="mx-auto max-w-7xl px-8 py-4">
+            autocomplete selection: {autoCompleteSelection}
+            <br />
             <AutoComplete
               fields={columns}
               placeholder="Future Autocomplete component here..."
+              onSelectionChange={setAutoCompleteSelection}
             />
           </div>
         </nav>
