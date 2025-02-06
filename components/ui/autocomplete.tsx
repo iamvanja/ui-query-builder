@@ -1,5 +1,11 @@
 import { Input } from "@/components/ui/input";
-import React, { forwardRef, useEffect, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  startTransition,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 const AutoComplete = forwardRef<
   HTMLInputElement,
@@ -81,8 +87,9 @@ const AutoComplete = forwardRef<
         type="text"
         className="w-full"
         onFocus={() => setInputFocused(true)}
-        // todo: is onBlur cancelling list item click?
-        onBlur={() => setInputFocused(false)}
+        // onBlur interfers with LIs onClick os
+        // https://github.com/facebook/react/issues/4210
+        onBlur={() => startTransition(() => setInputFocused(false))}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
