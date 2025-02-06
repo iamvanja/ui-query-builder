@@ -1,4 +1,3 @@
-import { AutoComplete } from "@/components/ui/autocomplete";
 import { useState } from "react";
 import columns from "@/columns.json";
 import { QueryBuilder } from "@/components/query-builder";
@@ -24,12 +23,9 @@ export default function Page() {
       </header>
       <nav>
         <div className="mx-auto max-w-7xl px-8 py-4">
-          QueryBuilder result: {queryBuilderResult}
+          QueryBuilder result (todo): {queryBuilderResult}
           <br />
-          <QueryBuilder
-            columns={columns}
-            onQueryUpdate={setQueryBuilderResult}
-          />
+          <QueryBuilder columns={columns} isDebug />
         </div>
       </nav>
       <main>
