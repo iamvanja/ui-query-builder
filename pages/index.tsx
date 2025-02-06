@@ -3,7 +3,7 @@ import columns from "@/columns.json";
 import { QueryBuilder } from "@/components/query-builder";
 
 export default function Page() {
-  const [queryBuilderResult, setQueryBuilderResult] = useState("");
+  // const [queryBuilderResult, setQueryBuilderResult] = useState("");
 
   return (
     <div className="min-h-full bg-gray-100">
@@ -23,7 +23,7 @@ export default function Page() {
       </header>
       <nav>
         <div className="mx-auto max-w-7xl px-8 py-4">
-          QueryBuilder result (todo): {queryBuilderResult}
+          {/* QueryBuilder result (todo): {queryBuilderResult} */}
           <br />
           <QueryBuilder columns={columns} isDebug />
         </div>
