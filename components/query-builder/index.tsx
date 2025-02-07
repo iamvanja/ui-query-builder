@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { AutoComplete } from "@/components/ui/autocomplete";
 import { Step, QueryPart, Column } from "./types";
 import { getPropsPerStep } from "./utils";
@@ -17,6 +17,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
   // onQueryUpdate,
 }) => {
   const [inputValue, setInputValue] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
   const [currentColumn, setCurrentColumn] = useState<Column | null>(null);
   const [currentStep, setCurrentStep] = useState<Step>(Step.column);
   const [currentQueryPart, setCurrentQueryPart] = useState<Partial<QueryPart>>(
@@ -54,10 +55,12 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     }
 
     setInputValue("");
+    inputRef.current?.focus();
   };
 
   const handleRemoveQueryPart = (index: number) => {
     setQueryParts(queryParts.filter((_, i) => i !== index));
+    inputRef.current?.focus();
   };
 
   return (
@@ -92,6 +95,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
         <div className="relative flex-grow flex items-center gap-1">
           <AutoComplete
             value={inputValue}
+            ref={inputRef}
             onChange={handleInputChange}
             onSelectionChange={handleSelectionChange}
             rootClassName="max-w-[300px]"
