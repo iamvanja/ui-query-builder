@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { AutoComplete } from "@/components/ui/autocomplete";
+import { Badge } from "../ui/badge";
 
 enum Step {
   column = "column",
@@ -9,11 +10,11 @@ enum Step {
 
 type QueryPart = {
   column: string;
-  operator: string;
+  comparator: string;
   value: string;
 };
 
-const operators = ["equals", "contains", "begins with", "ends with"];
+const comparators = ["equals", "contains", "begins with", "ends with"];
 
 const getPlaceholder = (currentStep: Step) => {
   if (currentStep === Step.column) {
@@ -46,7 +47,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
 
   const fieldsPerStep = {
     [Step.column]: columns,
-    [Step.comparator]: operators,
+    [Step.comparator]: comparators,
     [Step.value]: [],
   };
 
@@ -60,10 +61,14 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
       setCurrentQueryPart({ ...currentQueryPart, column: suggestion });
       setCurrentStep(Step.comparator);
     } else if (currentStep === Step.comparator) {
-      setCurrentQueryPart({ ...currentQueryPart, operator: suggestion });
+      setCurrentQueryPart({ ...currentQueryPart, comparator: suggestion });
       setCurrentStep(Step.value);
     } else if (currentStep === Step.value) {
-      if (currentQueryPart.column && currentQueryPart.operator && suggestion) {
+      if (
+        currentQueryPart.column &&
+        currentQueryPart.comparator &&
+        suggestion
+      ) {
         setQueryParts([
           ...queryParts,
           { ...(currentQueryPart as QueryPart), value: suggestion },
@@ -78,7 +83,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
   };
 
   return (
-    <div className="w-full max-w-2xl relative">
+    <div className="w-full relative">
       {isDebug && (
         <pre className="text-xs margin-auto overflow-auto max-h-[200px] mb-2">
           {JSON.stringify(
@@ -89,14 +94,25 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
         </pre>
       )}
 
-      <AutoComplete
-        value={inputValue}
-        fields={fieldsPerStep[currentStep]}
-        placeholder={getPlaceholder(currentStep)}
-        onChange={handleInputChange}
-        onSelectionChange={handleSelectionChange}
-        allowNoMatchSelection={currentStep === Step.value}
-      />
+      <div className="flex flex-wrap items-center gap-1 p-1 border rounded-md">
+        {queryParts.map((part, i) => (
+          <Badge variant="default" key={`query-part-${i}`}>
+            {part.column}&nbsp;<i>{part.comparator}</i>&nbsp;
+            {`"${part.value}"`}
+          </Badge>
+        ))}
+
+        <div className="relative flex-grow flex items-center gap-1">
+          <AutoComplete
+            value={inputValue}
+            fields={fieldsPerStep[currentStep]}
+            placeholder={getPlaceholder(currentStep)}
+            onChange={handleInputChange}
+            onSelectionChange={handleSelectionChange}
+            allowNoMatchSelection={currentStep === Step.value}
+          />
+        </div>
+      </div>
     </div>
   );
 };
