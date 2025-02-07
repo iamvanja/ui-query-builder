@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import React, {
   forwardRef,
   startTransition,
@@ -15,6 +16,7 @@ interface AutoCompleteProps
   fields: string[];
   onSelectionChange?: (selectedItem: string) => void;
   allowNoMatchSelection?: boolean;
+  rootClassName?: string;
 }
 
 const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
@@ -24,6 +26,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
       fields,
       onSelectionChange,
       allowNoMatchSelection = false,
+      rootClassName,
       ...props
     },
     ref
@@ -102,7 +105,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
     };
 
     return (
-      <div className="w-full relative">
+      <div className={cn("w-full relative", rootClassName)}>
         <Input
           {...props}
           value={value}

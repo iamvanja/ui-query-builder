@@ -110,6 +110,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
             onChange={handleInputChange}
             onSelectionChange={handleSelectionChange}
             allowNoMatchSelection={currentStep === Step.value}
+            rootClassName="max-w-[300px]"
           />
         </div>
       </div>
