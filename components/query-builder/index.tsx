@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { AutoComplete } from "@/components/ui/autocomplete";
-import { Badge } from "@/components/ui/badge";
 import { Step, QueryPart, Column } from "./types";
 import { getPropsPerStep } from "./utils";
+import { Chip } from "./chip";
+
 interface QueryBuilderProps {
   columns: Column[];
   isDebug?: boolean;
@@ -54,6 +55,10 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     setInputValue("");
   };
 
+  const handleRemoveQueryPart = (index: number) => {
+    setQueryParts(queryParts.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="w-full relative">
       {isDebug && (
@@ -67,11 +72,14 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
       )}
 
       <div className="flex flex-wrap items-center gap-1 p-1 border rounded-md">
-        {queryParts.map((part, i) => (
-          <Badge variant="default" key={`query-part-${i}`}>
-            {part.column}&nbsp;<i>{part.comparator}</i>&nbsp;
-            {`"${part.value}"`}
-          </Badge>
+        {queryParts.map((part, index) => (
+          <Chip
+            key={`query-part-${index}`}
+            column={part.column}
+            comparator={part.comparator}
+            value={part.value}
+            onDelete={() => handleRemoveQueryPart(index)}
+          />
         ))}
 
         <div className="relative flex-grow flex items-center gap-1">
