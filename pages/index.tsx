@@ -6,9 +6,9 @@ import { useState } from "react";
 export default function Page() {
   const [isDebug, setIsDebug] = useState(false);
 
-  interface DebugChangeEvent extends React.ChangeEvent<HTMLInputElement> {}
-
-  const handleDebugChange = (event: DebugChangeEvent) => {
+  const handleDebugChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     setIsDebug(event.target.checked);
   };
 
