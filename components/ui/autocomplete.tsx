@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { usePrevious } from "@/hooks/usePrevious";
 import { cn } from "@/lib/utils";
 import React, {
   forwardRef,
@@ -9,10 +10,7 @@ import React, {
 } from "react";
 
 interface AutoCompleteProps
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof Input>,
-    "type" | "className"
-  > {
+  extends Omit<React.ComponentPropsWithoutRef<typeof Input>, "className"> {
   fields: string[];
   onSelectionChange?: (selectedItem: string) => void;
   allowNoMatchSelection?: boolean;
@@ -23,6 +21,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
   (
     {
       value,
+      type = "text",
       fields,
       onSelectionChange,
       allowNoMatchSelection = false,
@@ -31,16 +30,20 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
     },
     ref
   ) => {
+    const prevFields = usePrevious(fields);
     const [isInputFocused, setInputFocused] = useState(false);
     const [suggestions, setSuggestions] = useState<string[]>(fields);
     const [focusedSuggestionIndex, setFocusedSuggestionIndex] = useState(-1);
     const suggestionRefs = useRef<(HTMLLIElement | null)[]>([]);
 
     useEffect(() => {
-      // Reset suggestions and focusedIndex when fields prop updates
-      setSuggestions(fields);
-      setFocusedSuggestionIndex(-1);
-    }, [fields]);
+      // this is ugly and should be replaced by _.isEqual or something similar. Not spending time on this now since building an autocomplete component is not the focus of this project.
+      if (JSON.stringify(fields) !== JSON.stringify(prevFields)) {
+        // Reset suggestions and focusedIndex when fields prop updates
+        setSuggestions(fields);
+        setFocusedSuggestionIndex(-1);
+      }
+    }, [prevFields, fields]);
 
     useEffect(() => {
       // Fixes keyboard dropdown selection not scrolling into view
@@ -108,9 +111,9 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
       <div className={cn("w-full relative", rootClassName)}>
         <Input
           {...props}
+          type={type}
           value={value}
           ref={ref}
-          type="text"
           className="w-full"
           onFocus={() => setInputFocused(true)}
           // onBlur interfers with the LIs onClick handler - https://github.com/facebook/react/issues/4210

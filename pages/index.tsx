@@ -1,6 +1,7 @@
 // import { useState } from "react";
-import columns from "@/columns.json";
 import { QueryBuilder } from "@/components/query-builder";
+import { columns } from "@/components/query-builder/columns";
+import { Column } from "@/components/query-builder/types";
 
 export default function Page() {
   // const [queryBuilderResult, setQueryBuilderResult] = useState("");
@@ -25,7 +26,7 @@ export default function Page() {
         <div className="mx-auto max-w-7xl px-8 py-4">
           {/* QueryBuilder result (todo): {queryBuilderResult} */}
           <br />
-          <QueryBuilder columns={columns} isDebug />
+          <QueryBuilder columns={columns as Column[]} isDebug />
         </div>
       </nav>
       <main>

@@ -1,34 +1,10 @@
 import React, { useState } from "react";
 import { AutoComplete } from "@/components/ui/autocomplete";
-import { Badge } from "../ui/badge";
-
-enum Step {
-  column = "column",
-  comparator = "comparator",
-  value = "value",
-}
-
-type QueryPart = {
-  column: string;
-  comparator: string;
-  value: string;
-};
-
-const comparators = ["equals", "contains", "begins with", "ends with"];
-
-const getPlaceholder = (currentStep: Step) => {
-  if (currentStep === Step.column) {
-    return "Select a column name...";
-  }
-  if (currentStep === Step.comparator) {
-    return "Select a comparator...";
-  }
-
-  return "Enter a value and press Enter...";
-};
-
+import { Badge } from "@/components/ui/badge";
+import { Step, QueryPart, Column } from "./types";
+import { getPropsPerStep } from "./utils";
 interface QueryBuilderProps {
-  columns: string[];
+  columns: Column[];
   isDebug?: boolean;
   // onQueryUpdate?: (query: string) => void; // todo
 }
@@ -39,17 +15,12 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
   // onQueryUpdate,
 }) => {
   const [inputValue, setInputValue] = useState("");
+  const [currentColumn, setCurrentColumn] = useState<Column | null>(null);
   const [currentStep, setCurrentStep] = useState<Step>(Step.column);
   const [currentQueryPart, setCurrentQueryPart] = useState<Partial<QueryPart>>(
     {}
   );
   const [queryParts, setQueryParts] = useState<QueryPart[]>([]);
-
-  const fieldsPerStep = {
-    [Step.column]: columns,
-    [Step.comparator]: comparators,
-    [Step.value]: [],
-  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -59,6 +30,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
   const handleSelectionChange = (suggestion: string) => {
     if (currentStep === Step.column) {
       setCurrentQueryPart({ ...currentQueryPart, column: suggestion });
+      setCurrentColumn(columns.find((col) => col.name === suggestion) ?? null);
       setCurrentStep(Step.comparator);
     } else if (currentStep === Step.comparator) {
       setCurrentQueryPart({ ...currentQueryPart, comparator: suggestion });
@@ -105,12 +77,10 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
         <div className="relative flex-grow flex items-center gap-1">
           <AutoComplete
             value={inputValue}
-            fields={fieldsPerStep[currentStep]}
-            placeholder={getPlaceholder(currentStep)}
             onChange={handleInputChange}
             onSelectionChange={handleSelectionChange}
-            allowNoMatchSelection={currentStep === Step.value}
             rootClassName="max-w-[300px]"
+            {...getPropsPerStep(currentStep, columns, currentColumn)}
           />
         </div>
       </div>
