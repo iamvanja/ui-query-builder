@@ -3,6 +3,7 @@ import { AutoComplete } from "@/components/ui/autocomplete";
 import { Step, QueryPart, Column } from "./types";
 import { getPropsPerStep } from "./utils";
 import { Chip } from "./chip";
+import { HelperText } from "./helper-text";
 
 interface QueryBuilderProps {
   columns: Column[];
@@ -70,6 +71,12 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
           )}
         </pre>
       )}
+
+      <HelperText
+        step={currentStep}
+        column={currentQueryPart.column}
+        comparator={currentQueryPart.comparator}
+      />
 
       <div className="flex flex-wrap items-center gap-1 p-1 border rounded-md">
         {queryParts.map((part, index) => (
