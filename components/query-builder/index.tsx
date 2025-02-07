@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AutoComplete } from "@/components/ui/autocomplete";
 import { Step, QueryPart, Column } from "./types";
 import { getPropsPerStep } from "./utils";
@@ -6,17 +6,18 @@ import { Chip } from "./chip";
 import { HelperText } from "./helper-text";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface QueryBuilderProps {
   columns: Column[];
   isDebug?: boolean;
-  // onQueryUpdate?: (query: string) => void; // todo
+  rootClassName?: string;
 }
 
 const QueryBuilder: React.FC<QueryBuilderProps> = ({
   columns,
   isDebug = false,
-  // onQueryUpdate,
+  rootClassName,
 }) => {
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -26,6 +27,10 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     {}
   );
   const [queryParts, setQueryParts] = useState<QueryPart[]>([]);
+
+  useEffect(() => {
+    inputRef?.current?.focus();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -87,7 +92,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
   );
 
   return (
-    <div className="w-full relative">
+    <div className={cn("w-full relative", rootClassName)}>
       {isDebug && (
         <pre className="text-xs margin-auto overflow-auto max-h-[200px] mb-2">
           {JSON.stringify(

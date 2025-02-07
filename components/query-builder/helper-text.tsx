@@ -2,8 +2,8 @@ import { QueryPart, Step } from "./types";
 
 type ChipProps = {
   step: Step;
-  column?: string;
-  comparator?: string;
+  column?: QueryPart["column"];
+  comparator?: QueryPart["comparator"];
 };
 
 const HelperText: React.FC<ChipProps> = ({ step, column, comparator }) => {
