@@ -1,9 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { AutoComplete } from "@/components/ui/autocomplete";
 import { Step, QueryPart, Column } from "./types";
 import { getPropsPerStep } from "./utils";
 import { Chip } from "./chip";
 import { HelperText } from "./helper-text";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 
 interface QueryBuilderProps {
   columns: Column[];
@@ -63,6 +65,27 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     inputRef.current?.focus();
   };
 
+  const handleGoBack = useCallback(() => {
+    if (currentStep === Step.comparator) {
+      setCurrentStep(Step.column);
+      setCurrentQueryPart({ ...currentQueryPart, column: undefined });
+    } else if (currentStep === Step.value) {
+      setCurrentStep(Step.comparator);
+      setCurrentQueryPart({ ...currentQueryPart, comparator: undefined });
+    }
+    setInputValue("");
+  }, [currentStep, currentQueryPart]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Backspace" && inputValue === "") {
+        e.preventDefault();
+        handleGoBack();
+      }
+    },
+    [handleGoBack, inputValue]
+  );
+
   return (
     <div className="w-full relative">
       {isDebug && (
@@ -93,12 +116,18 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
         ))}
 
         <div className="relative flex-grow flex items-center gap-1">
+          {currentStep !== Step.column && (
+            <Button variant="ghost" size="sm" onClick={handleGoBack}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+          )}
           <AutoComplete
             value={inputValue}
             ref={inputRef}
             onChange={handleInputChange}
             onSelectionChange={handleSelectionChange}
             rootClassName="max-w-[300px]"
+            onKeyDown={handleKeyDown}
             {...getPropsPerStep(currentStep, columns, currentColumn)}
           />
         </div>
