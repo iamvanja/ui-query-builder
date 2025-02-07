@@ -11,7 +11,7 @@ const HelperText: React.FC<ChipProps> = ({ step, column, comparator }) => {
     <div className="mt-2 text-sm text-muted-foreground">
       {step === Step.column && "Select a column to start building your query."}
       {step === Step.comparator &&
-        `Select an operator for "${column}". Use backspace to go back.`}
+        `Select an comparator for "${column}". Use backspace to go back.`}
       {step === Step.value &&
         `Enter a value for "${column} ${comparator}". Use backspace to go back.`}
     </div>
