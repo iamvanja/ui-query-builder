@@ -27,10 +27,18 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     {}
   );
   const [queryParts, setQueryParts] = useState<QueryPart[]>([]);
+  const chipRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [focusedChipIndex, setFocusedChipIndex] = useState(-1);
 
   useEffect(() => {
     inputRef?.current?.focus();
   }, []);
+
+  useEffect(() => {
+    if (inputRef?.current === document.activeElement) {
+      setFocusedChipIndex(-1);
+    }
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -70,6 +78,39 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     inputRef.current?.focus();
   };
 
+  const handleChipFocused = ({
+    index,
+    position,
+  }: {
+    index?: number;
+    position: "first" | "last" | "prev" | "next";
+  }) => {
+    const chipCount = chipRefs?.current?.length ?? 0;
+    let nextIndex: number | undefined;
+
+    if (position === "first") {
+      nextIndex = 0;
+    } else if (position === "last") {
+      nextIndex = chipCount - 1;
+    } else if (position === "prev" && index !== undefined) {
+      nextIndex = index - 1;
+    } else if (position === "next" && index !== undefined) {
+      nextIndex = index + 1;
+    }
+
+    if (
+      nextIndex !== undefined &&
+      nextIndex > -1 &&
+      nextIndex <= chipCount - 1
+    ) {
+      chipRefs.current[nextIndex]?.focus();
+      return;
+    }
+
+    setFocusedChipIndex(-1);
+    inputRef.current?.focus();
+  };
+
   const handleGoBack = useCallback(() => {
     if (currentStep === Step.comparator) {
       setCurrentStep(Step.column);
@@ -87,16 +128,49 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
         e.preventDefault();
         handleGoBack();
       }
+      if (currentStep === Step.column && inputValue === "") {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          handleChipFocused({ position: "last" });
+        }
+        if (e.key === "ArrowRight") {
+          e.preventDefault();
+          handleChipFocused({ position: "first" });
+        }
+      }
     },
     [handleGoBack, inputValue]
   );
+
+  const handleChipKeyDown = (
+    e: React.KeyboardEvent<HTMLDivElement>,
+    index: number
+  ) => {
+    if (e.key === "Backspace" || e.key === "Delete") {
+      e.preventDefault();
+      handleRemoveQueryPart(index);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      handleChipFocused({ index, position: "prev" });
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      handleChipFocused({ index, position: "next" });
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      if (e.shiftKey) {
+        handleChipFocused({ index, position: "prev" });
+      } else {
+        handleChipFocused({ index, position: "next" });
+      }
+    }
+  };
 
   return (
     <div className={cn("w-full relative", rootClassName)}>
       {isDebug && (
         <pre className="text-xs margin-auto overflow-auto max-h-[200px] mb-2">
           {JSON.stringify(
-            { currentStep, currentQueryPart, queryParts },
+            { currentStep, currentQueryPart, focusedChipIndex, queryParts },
             null,
             2
           )}
@@ -107,6 +181,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
         step={currentStep}
         column={currentQueryPart.column}
         comparator={currentQueryPart.comparator}
+        isChipFocused={focusedChipIndex > -1}
       />
 
       <div className="flex flex-wrap items-center gap-1 p-1 border rounded-md">
@@ -117,6 +192,14 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
             comparator={part.comparator}
             value={part.value}
             onDelete={() => handleRemoveQueryPart(index)}
+            ref={(el) => {
+              if (el) {
+                chipRefs.current[index] = el;
+              }
+            }}
+            tabIndex={0}
+            onKeyDown={(e) => handleChipKeyDown(e, index)}
+            onFocus={() => setFocusedChipIndex(index)}
           />
         ))}
 
@@ -127,6 +210,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
             </Button>
           )}
           <AutoComplete
+            tabIndex={0}
             value={inputValue}
             ref={inputRef}
             onChange={handleInputChange}
