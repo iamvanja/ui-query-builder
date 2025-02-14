@@ -1,8 +1,9 @@
 import { QueryBuilder } from "@/components/query-builder";
 import { columns } from "@/components/query-builder/columns";
-import { Column } from "@/components/query-builder/types";
-import { useState } from "react";
+import { Column, QueryPart } from "@/components/query-builder/types";
+import { useState, useEffect } from "react";
 
+const LS_QUERY_PARTS_KEY = "queryParts";
 export default function Page() {
   const [isDebug, setIsDebug] = useState(false);
 
@@ -11,6 +12,16 @@ export default function Page() {
   ): void => {
     setIsDebug(event.target.checked);
   };
+
+  const [initialFilter, setInitialFilter] = useState<QueryPart[] | undefined>(
+    undefined
+  );
+  useEffect(() => {
+    const storedQueryParts = localStorage?.getItem(LS_QUERY_PARTS_KEY);
+    setInitialFilter(
+      storedQueryParts ? (JSON.parse(storedQueryParts) as QueryPart[]) : []
+    );
+  }, []);
 
   return (
     <div className="min-h-full bg-gray-100">
@@ -46,12 +57,20 @@ export default function Page() {
               </label>
             </div>
           </div>
-
-          <QueryBuilder
-            columns={columns as Column[]}
-            isDebug={isDebug}
-            rootClassName="mt-4"
-          />
+          {initialFilter !== undefined && (
+            <QueryBuilder
+              initialFilter={initialFilter}
+              columns={columns as Column[]}
+              isDebug={isDebug}
+              rootClassName="mt-4"
+              onFilterChange={(queryParts) => {
+                localStorage.setItem(
+                  LS_QUERY_PARTS_KEY,
+                  JSON.stringify(queryParts)
+                );
+              }}
+            />
+          )}
         </div>
       </nav>
       <main>

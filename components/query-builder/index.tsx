@@ -12,12 +12,16 @@ interface QueryBuilderProps {
   columns: Column[];
   isDebug?: boolean;
   rootClassName?: string;
+  onFilterChange?: (queryParts: QueryPart[]) => void;
+  initialFilter?: QueryPart[];
 }
 
 const QueryBuilder: React.FC<QueryBuilderProps> = ({
   columns,
   isDebug = false,
   rootClassName,
+  onFilterChange,
+  initialFilter,
 }) => {
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -26,7 +30,9 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
   const [currentQueryPart, setCurrentQueryPart] = useState<Partial<QueryPart>>(
     {}
   );
-  const [queryParts, setQueryParts] = useState<QueryPart[]>([]);
+  const [queryParts, setQueryParts] = useState<QueryPart[]>(
+    initialFilter ?? []
+  );
   const chipRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [focusedChipIndex, setFocusedChipIndex] = useState(-1);
 
@@ -38,7 +44,14 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     if (inputRef?.current === document.activeElement) {
       setFocusedChipIndex(-1);
     }
-  });
+  }, []);
+
+  // When queryParts array updates, fire onFilterChange
+  useEffect(() => {
+    if (onFilterChange) {
+      onFilterChange(queryParts);
+    }
+  }, [queryParts.length, onFilterChange, queryParts]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -139,7 +152,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
         }
       }
     },
-    [handleGoBack, inputValue]
+    [handleGoBack, inputValue, currentStep]
   );
 
   const handleChipKeyDown = (
