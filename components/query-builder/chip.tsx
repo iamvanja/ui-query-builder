@@ -27,7 +27,7 @@ const Chip = forwardRef<HTMLDivElement, ChipProps>(
         )}
         &nbsp;
         {value ? (
-          `"${value}"`
+          <code>{value}</code>
         ) : (
           <Skeleton className="h-2 w-[24px] bg-slate-300 animate-none" />
         )}
