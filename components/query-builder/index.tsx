@@ -202,6 +202,14 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
             onFocus={() => setFocusedChipIndex(index)}
           />
         ))}
+        {currentQueryPart.column && (
+          <Chip
+            isInProgress
+            column={currentQueryPart.column}
+            comparator={currentQueryPart.comparator}
+            value={currentQueryPart.value}
+          />
+        )}
 
         <div className="relative flex-grow flex items-center gap-1">
           {currentStep !== Step.column && (
