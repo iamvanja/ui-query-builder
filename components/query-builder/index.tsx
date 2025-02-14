@@ -159,22 +159,23 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     e: React.KeyboardEvent<HTMLDivElement>,
     index: number
   ) => {
-    if (e.key === "Backspace" || e.key === "Delete") {
+    const keyActions: { [key: string]: () => void } = {
+      Backspace: () => handleRemoveQueryPart(index),
+      Delete: () => handleRemoveQueryPart(index),
+      ArrowLeft: () => handleChipFocused({ index, position: "prev" }),
+      ArrowRight: () => handleChipFocused({ index, position: "next" }),
+      Tab: () => {
+        if (e.shiftKey) {
+          handleChipFocused({ index, position: "prev" });
+        } else {
+          handleChipFocused({ index, position: "next" });
+        }
+      },
+    };
+
+    if (keyActions[e.key]) {
       e.preventDefault();
-      handleRemoveQueryPart(index);
-    } else if (e.key === "ArrowLeft") {
-      e.preventDefault();
-      handleChipFocused({ index, position: "prev" });
-    } else if (e.key === "ArrowRight") {
-      e.preventDefault();
-      handleChipFocused({ index, position: "next" });
-    } else if (e.key === "Tab") {
-      e.preventDefault();
-      if (e.shiftKey) {
-        handleChipFocused({ index, position: "prev" });
-      } else {
-        handleChipFocused({ index, position: "next" });
-      }
+      keyActions[e.key]();
     }
   };
 
