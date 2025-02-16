@@ -191,13 +191,14 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
         </pre>
       )}
 
-      <HelperText
-        step={currentStep}
-        column={currentQueryPart.column}
-        comparator={currentQueryPart.comparator}
-        isChipFocused={focusedChipIndex > -1}
-      />
-
+      <div className="mb-1">
+        <HelperText
+          step={currentStep}
+          column={currentQueryPart.column}
+          comparator={currentQueryPart.comparator}
+          isChipFocused={focusedChipIndex > -1}
+        />
+      </div>
       <div className="flex flex-wrap items-center gap-1 p-1 border rounded-md">
         {queryParts.map((part, index) => (
           <Chip
