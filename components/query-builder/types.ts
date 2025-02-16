@@ -9,6 +9,7 @@ enum InputType {
   number = "number",
   enum = "enum",
   boolean = "boolean",
+  date = "date",
 }
 
 type QueryPart = {

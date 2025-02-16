@@ -5,6 +5,7 @@ const stringComparators = ["equals", "contains", "begins with", "ends with"];
 const numberComparators = ["equals", "greater than", "less than", "between"];
 const enumComparators = ["is", "is not"];
 const boolComparators = enumComparators;
+const dateComparators = ["on", "before", "after"];
 const getComparatorsPerInputType = (
   inputType: InputType = InputType.string
 ) => {
@@ -17,13 +18,22 @@ const getComparatorsPerInputType = (
       return enumComparators;
     case InputType.boolean:
       return boolComparators;
+    case InputType.date:
+      return dateComparators;
     default:
       return defaultComparators;
   }
 };
 
 const getValueInputType = (inputType: InputType = InputType.string): string => {
-  return inputType === InputType.number ? "number" : "text";
+  switch (inputType) {
+    case InputType.number:
+      return "number";
+    case InputType.date:
+      return "date";
+    default:
+      return "text";
+  }
 };
 
 const boolFields = ["true", "false"];
