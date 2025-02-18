@@ -9,7 +9,7 @@ type ChipProps = {
 
 const getText = ({ isChipFocused, step, column, comparator }: ChipProps) => {
   if (isChipFocused) {
-    return "Use backspace to delete. Left/Right Arrows or Tab/Shift+Tab to navigate between chips and the new filter input.";
+    return "Use backspace to delete. Enter to edit. Left/Right Arrows or Tab/Shift+Tab to navigate between chips and the new filter input.";
   }
 
   switch (step) {

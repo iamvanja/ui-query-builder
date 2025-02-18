@@ -47,6 +47,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     localStorageKey,
     initialFilter
   );
+  const [editingIndex, setEditingIndex] = useState<number | null>(null); // Added state for editing index
 
   useEffect(() => {
     if (shouldFocusOnMount) {
@@ -93,10 +94,23 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
         currentQueryPart.comparator &&
         suggestion
       ) {
-        setQueryParts([
-          ...queryParts,
-          { ...(currentQueryPart as QueryPart), value: suggestion },
-        ]);
+        if (editingIndex !== null) {
+          // Update existing query part
+          setQueryParts(
+            queryParts.map((part, index) =>
+              index === editingIndex
+                ? { ...(currentQueryPart as QueryPart), value: suggestion }
+                : part
+            )
+          );
+          setEditingIndex(null);
+        } else {
+          // Add new query part
+          setQueryParts([
+            ...queryParts,
+            { ...(currentQueryPart as QueryPart), value: suggestion },
+          ]);
+        }
 
         setCurrentQueryPart({});
         setCurrentStep(Step.column);
@@ -109,6 +123,15 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
 
   const handleRemoveQueryPart = (index: number) => {
     setQueryParts(queryParts.filter((_, i) => i !== index));
+    inputRef.current?.focus();
+  };
+
+  const handleEditQueryPart = (index: number) => {
+    const partToEdit = queryParts[index];
+    setCurrentQueryPart(partToEdit);
+    setInputValue(partToEdit.column);
+    setCurrentStep(Step.column);
+    setEditingIndex(index);
     inputRef.current?.focus();
   };
 
@@ -188,6 +211,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     const keyActions: { [key: string]: () => void } = {
       Backspace: () => handleRemoveQueryPart(index),
       Delete: () => handleRemoveQueryPart(index),
+      Enter: () => handleEditQueryPart(index),
       ArrowLeft: () => handleChipFocused({ index, position: "prev" }),
       ArrowRight: () => handleChipFocused({ index, position: "next" }),
       Tab: () => {
@@ -239,6 +263,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
       <div className="flex flex-wrap items-center gap-1 p-1 border rounded-md">
         {queryParts.map((part, index) => (
           <Chip
+            isInProgress={index === editingIndex}
             key={`query-part-${index}`}
             column={part.column}
             comparator={part.comparator}
@@ -254,7 +279,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
             onFocus={() => setFocusedChipIndex(index)}
           />
         ))}
-        {currentQueryPart.column && (
+        {currentQueryPart.column && editingIndex === null && (
           <Chip
             isInProgress
             column={currentQueryPart.column}
@@ -279,6 +304,15 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
             onKeyDown={handleKeyDown}
             {...getPropsPerStep(currentStep, columns, currentColumn)}
           />
+          {currentStep === "value" && (
+            <Button
+              className="px-7"
+              size="icon"
+              onClick={() => handleSelectionChange(inputValue)}
+            >
+              {editingIndex !== null ? "Update" : "Add"}
+            </Button>
+          )}
         </div>
       </div>
     </div>
