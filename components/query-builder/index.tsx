@@ -7,6 +7,7 @@ import { HelperText } from "./helper-text";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 interface QueryBuilderProps {
   columns: Column[];
@@ -14,7 +15,11 @@ interface QueryBuilderProps {
   rootClassName?: string;
   onFilterChange?: (queryParts: QueryPart[]) => void;
   initialFilter?: QueryPart[];
+  localStorageKey?: string;
+  shouldPersistData?: boolean;
+  shouldFocusOnMount?: boolean;
 }
+const LS_QUERY_PARTS_KEY = "filter";
 
 const QueryBuilder: React.FC<QueryBuilderProps> = ({
   columns,
@@ -22,6 +27,9 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
   rootClassName,
   onFilterChange,
   initialFilter,
+  localStorageKey = LS_QUERY_PARTS_KEY,
+  shouldPersistData = false,
+  shouldFocusOnMount = false,
 }) => {
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -35,21 +43,34 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
   );
   const chipRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [focusedChipIndex, setFocusedChipIndex] = useState(-1);
+  const [storedValue, setStoredValue] = useLocalStorage(
+    localStorageKey,
+    initialFilter
+  );
 
   useEffect(() => {
-    inputRef?.current?.focus();
-  }, []);
+    if (shouldFocusOnMount) {
+      inputRef?.current?.focus();
+    }
 
-  useEffect(() => {
+    // unfocus chip when focused outside the input
     if (inputRef?.current === document.activeElement) {
       setFocusedChipIndex(-1);
     }
+
+    if (shouldPersistData && storedValue) {
+      setQueryParts(storedValue);
+    }
   }, []);
 
-  // When queryParts array updates, fire onFilterChange
+  // When queryParts array updates, fire onFilterChange and update local storage
   useEffect(() => {
     if (onFilterChange) {
       onFilterChange(queryParts);
+    }
+
+    if (shouldPersistData) {
+      setStoredValue(queryParts);
     }
   }, [queryParts.length, onFilterChange, queryParts]);
 
@@ -184,7 +205,12 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
       {isDebug && (
         <pre className="text-xs margin-auto overflow-auto max-h-[200px] mb-2">
           {JSON.stringify(
-            { currentStep, currentQueryPart, focusedChipIndex, queryParts },
+            {
+              currentStep,
+              currentQueryPart,
+              focusedChipIndex,
+              queryParts,
+            },
             null,
             2
           )}

@@ -3,12 +3,11 @@ import { columns } from "@/components/query-builder/columns";
 import { Column, QueryPart } from "@/components/query-builder/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ListFilter } from "lucide-react";
 
-const LS_QUERY_PARTS_KEY = "queryParts";
 export default function Page() {
-  const [isDebug, setIsDebug] = useState(false);
+  const [isDebug, setIsDebug] = useState(true);
   const [isSticky, setIsSticky] = useState(true);
   const [isControlBarVisible, setIsControlBarVisible] = useState(true);
 
@@ -17,6 +16,7 @@ export default function Page() {
   ): void => {
     setIsDebug(event.target.checked);
   };
+
   const handleStickyChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
@@ -26,17 +26,6 @@ export default function Page() {
   const toggleControlBar = () => {
     setIsControlBarVisible(!isControlBarVisible);
   };
-
-  const [initialFilter, setInitialFilter] = useState<QueryPart[] | undefined>(
-    undefined
-  );
-
-  useEffect(() => {
-    const storedQueryParts = localStorage?.getItem(LS_QUERY_PARTS_KEY);
-    setInitialFilter(
-      storedQueryParts ? (JSON.parse(storedQueryParts) as QueryPart[]) : []
-    );
-  }, []);
 
   return (
     <div className="min-h-full bg-gray-100">
@@ -104,20 +93,12 @@ export default function Page() {
                 </label>
               </div>
             </div>
-            {initialFilter !== undefined && (
-              <QueryBuilder
-                initialFilter={initialFilter}
-                columns={columns as Column[]}
-                isDebug={isDebug}
-                rootClassName="mt-4"
-                onFilterChange={(queryParts) => {
-                  localStorage.setItem(
-                    LS_QUERY_PARTS_KEY,
-                    JSON.stringify(queryParts)
-                  );
-                }}
-              />
-            )}
+            <QueryBuilder
+              shouldPersistData
+              columns={columns as Column[]}
+              isDebug={isDebug}
+              rootClassName="mt-4"
+            />
           </div>
         </div>
       </nav>
