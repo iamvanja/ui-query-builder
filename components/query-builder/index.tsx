@@ -112,6 +112,11 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     inputRef.current?.focus();
   };
 
+  const handleRemoveAllQueryParts = () => {
+    setQueryParts([]);
+    inputRef.current?.focus();
+  };
+
   const handleChipFocused = ({
     index,
     position,
@@ -217,13 +222,19 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
         </pre>
       )}
 
-      <div className="mb-1">
+      <div className="mb-1 flex justify-between items-end">
         <HelperText
           step={currentStep}
           column={currentQueryPart.column}
           comparator={currentQueryPart.comparator}
           isChipFocused={focusedChipIndex > -1}
         />
+
+        {queryParts.length > 0 && (
+          <Button variant="ghost" size="sm" onClick={handleRemoveAllQueryParts}>
+            Clear All
+          </Button>
+        )}
       </div>
       <div className="flex flex-wrap items-center gap-1 p-1 border rounded-md">
         {queryParts.map((part, index) => (
