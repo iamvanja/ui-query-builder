@@ -1,5 +1,9 @@
 const columns = [
   {
+    name: "Date",
+    inputType: "date",
+  },
+  {
     name: "Name",
     inputType: "string",
   },
