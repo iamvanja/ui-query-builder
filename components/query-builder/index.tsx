@@ -300,7 +300,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
             ref={inputRef}
             onChange={handleInputChange}
             onSelectionChange={handleSelectionChange}
-            rootClassName="max-w-[300px]"
+            rootClassName="max-w-[240px]"
             onKeyDown={handleKeyDown}
             {...getPropsPerStep(currentStep, columns, currentColumn)}
           />

@@ -27,7 +27,7 @@ const Chip = forwardRef<HTMLDivElement, ChipProps>(
         )}
         &nbsp;
         {value ? (
-          <code>{value}</code>
+          <code className="max-w-[300px] truncate">{value}</code>
         ) : (
           <Skeleton className="h-2 w-[24px] bg-slate-300 animate-none" />
         )}
