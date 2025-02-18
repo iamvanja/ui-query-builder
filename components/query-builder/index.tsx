@@ -232,7 +232,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
 
         {queryParts.length > 0 && (
           <Button variant="ghost" size="sm" onClick={handleRemoveAllQueryParts}>
-            Clear All
+            Remove All
           </Button>
         )}
       </div>
