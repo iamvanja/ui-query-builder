@@ -62,6 +62,7 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     if (shouldPersistData && storedValue) {
       setQueryParts(storedValue);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // When queryParts array updates, fire onFilterChange and update local storage
@@ -73,7 +74,13 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     if (shouldPersistData) {
       setStoredValue(queryParts);
     }
-  }, [queryParts.length, onFilterChange, queryParts]);
+  }, [
+    queryParts.length,
+    onFilterChange,
+    queryParts,
+    shouldPersistData,
+    setStoredValue,
+  ]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

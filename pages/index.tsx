@@ -1,6 +1,6 @@
 import { QueryBuilder } from "@/components/query-builder";
 import { columns } from "@/components/query-builder/columns";
-import { Column, QueryPart } from "@/components/query-builder/types";
+import { Column } from "@/components/query-builder/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
