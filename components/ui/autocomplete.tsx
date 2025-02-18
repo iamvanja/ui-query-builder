@@ -147,7 +147,7 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
 
         {isInputFocused && suggestions.length > 0 && (
           <ul
-            className="absolute left-0 right-0 z-10 bg-popover text-popover-foreground border rounded-md shadow-lg max-h-60 overflow-auto"
+            className="absolute mt-[2px] left-0 right-0 z-10 bg-popover text-popover-foreground border rounded-md shadow-lg max-h-60 overflow-auto"
             ref={suggestionDropdownRef}
           >
             {suggestions.map((suggestion, index) => (
