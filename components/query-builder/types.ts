@@ -1,10 +1,10 @@
-enum Step {
+export enum Step {
   column = "column",
   comparator = "comparator",
   value = "value",
 }
 
-enum InputType {
+export enum InputType {
   string = "string",
   number = "number",
   enum = "enum",
@@ -12,17 +12,29 @@ enum InputType {
   date = "date",
 }
 
-type QueryPart = {
+export type QueryPart = {
   column: string;
   comparator: string;
   value: string;
 };
 
-type Column = {
+export type Column = {
   name: string;
   inputType?: InputType;
   options?: string[];
 };
 
-export { Step, InputType };
-export type { QueryPart, Column };
+export type ClassNames = {
+  root?: string;
+  debug?: string;
+  topBar?: string;
+  helperText?: string;
+  removeAllButton?: string;
+};
+
+export type PublicAPI = {
+  input: {
+    blur(): void;
+    focus(): void;
+  };
+};

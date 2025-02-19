@@ -1,4 +1,6 @@
 import { Step, InputType, Column } from "./types";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 const defaultComparators = ["equals", "contains", "begins with", "ends with"];
 const stringComparators = ["equals", "contains", "begins with", "ends with"];
@@ -76,4 +78,8 @@ const getPropsPerStep = (
   }
 };
 
-export { getPropsPerStep };
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+export { getPropsPerStep, cn };
