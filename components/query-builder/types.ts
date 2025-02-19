@@ -31,3 +31,10 @@ export type ClassNames = {
   helperText?: string;
   removeAllButton?: string;
 };
+
+export type PublicAPI = {
+  input: {
+    blur(): void;
+    focus(): void;
+  };
+};

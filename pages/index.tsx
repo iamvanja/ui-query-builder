@@ -3,13 +3,15 @@ import { columns } from "@/components/query-builder/columns";
 import { Column } from "@/components/query-builder/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/components/query-builder/utils";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ListFilter } from "lucide-react";
+import { QueryBuilderAPI } from "@/components/query-builder/components/QueryBuilder";
 
 export default function Page() {
   const [isDebug, setIsDebug] = useState(true);
   const [isSticky, setIsSticky] = useState(true);
   const [isControlBarVisible, setIsControlBarVisible] = useState(true);
+  const api = useRef<QueryBuilderAPI>(null!);
 
   const handleDebugChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -60,6 +62,11 @@ export default function Page() {
             relative: !isSticky,
           }
         )}
+        onTransitionEnd={(e) => {
+          if (e.propertyName === "opacity" && isControlBarVisible) {
+            api.current.input.focus();
+          }
+        }}
       >
         <div className="control-bar-container mx-auto max-w-7xl px-8 py-4">
           <div className="px-4">
@@ -94,10 +101,14 @@ export default function Page() {
               </div>
             </div>
             <QueryBuilder
+              ref={api}
+              shouldFocusOnMount
               shouldPersistData
               columns={columns as Column[]}
               isDebug={isDebug}
-              rootClassName="mt-4"
+              classNames={{
+                root: "mt-4",
+              }}
             />
           </div>
         </div>
