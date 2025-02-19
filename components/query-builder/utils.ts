@@ -78,8 +78,8 @@ const getPropsPerStep = (
   }
 };
 
-export function cn(...inputs: ClassValue[]) {
+function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export { getPropsPerStep };
+export { getPropsPerStep, cn };
