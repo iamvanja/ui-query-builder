@@ -2,7 +2,7 @@ import { QueryBuilder } from "@/components/query-builder";
 import { columns } from "@/components/query-builder/columns";
 import { Column } from "@/components/query-builder/types";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/components/query-builder/utils";
 import { useState } from "react";
 import { ListFilter } from "lucide-react";
 

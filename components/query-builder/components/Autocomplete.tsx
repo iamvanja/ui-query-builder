@@ -1,10 +1,9 @@
-import { Input } from "@/components/ui/input";
-import { usePrevious } from "@/hooks/usePrevious";
-import { cn } from "@/lib/utils";
+import { usePrevious } from "../hooks/usePrevious";
+import { cn } from "../utils";
 import React, { forwardRef, useEffect, useRef, useState } from "react";
 
 interface AutoCompleteProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof Input>, "className"> {
+  extends Omit<React.ComponentPropsWithoutRef<"input">, "className"> {
   fields: string[];
   onSelectionChange?: (selectedItem: string) => void;
   allowNoMatchSelection?: boolean;
@@ -134,12 +133,14 @@ const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(
 
     return (
       <div className={cn("w-full relative", rootClassName)}>
-        <Input
+        <input
           {...props}
           type={type}
           value={value}
           ref={inputRef}
-          className="w-full"
+          className={cn(
+            "w-full, flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground  disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus:ring-0 focus:border-slate-600"
+          )}
           onFocus={() => setInputFocused(true)}
           onChange={handleChange}
           onKeyDown={handleKeyDown}

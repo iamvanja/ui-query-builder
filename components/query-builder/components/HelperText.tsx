@@ -1,4 +1,4 @@
-import { QueryPart, Step } from "./types";
+import { QueryPart, Step } from "../types";
 
 type ChipProps = {
   step: Step;
