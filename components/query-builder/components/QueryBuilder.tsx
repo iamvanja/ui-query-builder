@@ -1,37 +1,42 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { AutoComplete } from "./Autocomplete";
-import { Step, QueryPart, Column } from "../types";
+import { Step, QueryPart, Column, ClassNames } from "../types";
 import { getPropsPerStep } from "../utils";
 import { Chip } from "./Chip";
-import { HelperText } from "./HelperText";
 import { Button } from "./Button";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "../utils";
 
 import { GlobalContext } from "../contexts";
 import { usePrivateAPI } from "../hooks/usePrivateAPI";
+import { Debug, DebugRenderer } from "./Debug";
+import { TopBar, TopBarRenderer } from "./TopBar";
 
-interface QueryBuilderProps {
+export type QueryBuilderProps = {
   columns: Column[];
   isDebug?: boolean;
-  rootClassName?: string;
+  classNames?: ClassNames;
   onFilterChange?: (queryParts: QueryPart[]) => void;
   initialFilter?: QueryPart[];
   localStorageKey?: string;
   shouldPersistData?: boolean;
   shouldFocusOnMount?: boolean;
-}
+  renderDebug?: DebugRenderer;
+  renderTopBar?: TopBarRenderer;
+};
 const LS_QUERY_PARTS_KEY = "filter";
 
 const QueryBuilder: React.FC<QueryBuilderProps> = ({
   columns,
   isDebug = false,
-  rootClassName,
+  classNames = {},
   onFilterChange,
   initialFilter = [],
   localStorageKey = LS_QUERY_PARTS_KEY,
   shouldPersistData = false,
   shouldFocusOnMount = false,
+  renderDebug,
+  renderTopBar,
 }) => {
   const privateAPIref = usePrivateAPI({
     initialFilter,
@@ -122,11 +127,6 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
     privateAPIref.current.setInputValue(partToEdit.column);
     privateAPIref.current.setCurrentStep(Step.column);
     privateAPIref.current.setEditedChipIndex(index);
-    inputRef.current?.focus();
-  };
-
-  const handleRemoveAllQueryParts = () => {
-    privateAPIref.current.setQueryParts([]);
     inputRef.current?.focus();
   };
 
@@ -239,42 +239,13 @@ const QueryBuilder: React.FC<QueryBuilderProps> = ({
   };
 
   return (
-    <GlobalContext.Provider value={{ inputRef, privateAPIref }}>
-      <div className={cn("w-full relative", rootClassName)}>
-        {isDebug && (
-          <pre className="text-xs margin-auto overflow-auto max-h-[200px] mb-2">
-            {JSON.stringify(
-              {
-                currentStep: privateAPIref.current.state.currentStep,
-                currentQueryPart: privateAPIref.current.state.currentQueryPart,
-                focusedChipIndex: privateAPIref.current.state.focusedChipIndex,
-                editedChipIndex: privateAPIref.current.state.editedChipIndex,
-                queryParts: privateAPIref.current.state.queryParts,
-              },
-              null,
-              2
-            )}
-          </pre>
-        )}
+    <GlobalContext.Provider value={{ inputRef, privateAPIref, classNames }}>
+      <div className={cn("w-full relative", classNames.root)}>
+        {isDebug && <Debug render={renderDebug} />}
 
-        <div className="mb-1 flex justify-between items-end">
-          <HelperText
-            step={privateAPIref.current.state.currentStep}
-            column={privateAPIref.current.state.currentQueryPart.column}
-            comparator={privateAPIref.current.state.currentQueryPart.comparator}
-            isChipFocused={privateAPIref.current.state.focusedChipIndex > -1}
-          />
+        <TopBar render={renderTopBar} />
 
-          {privateAPIref.current.state.queryParts.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleRemoveAllQueryParts}
-            >
-              Remove All
-            </Button>
-          )}
-        </div>
+        {/* todo: MainRow component, handle focus/blur styling */}
         <div className="flex flex-wrap items-center gap-1 p-1 border rounded-md">
           {privateAPIref.current.state.queryParts.map((part, index) => (
             <Chip
