@@ -52,7 +52,7 @@ const QueryBuilder = forwardRef<PublicAPI, QueryBuilderProps>(
     const inputRef = useRef<HTMLInputElement>(null);
     const chipRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-    const publicAPI = usePublicAPI({ inputRef, privateAPIref });
+    const publicAPI = usePublicAPI({ inputRef });
 
     if (ref) {
       if (typeof ref === "function") {
@@ -336,6 +336,8 @@ const QueryBuilder = forwardRef<PublicAPI, QueryBuilderProps>(
     );
   }
 );
+
+QueryBuilder.displayName = "QueryBuilder";
 
 export { QueryBuilder };
 export type { PublicAPI as QueryBuilderAPI, QueryBuilderProps };
